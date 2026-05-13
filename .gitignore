@@ -1,0 +1,102 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+Thumbs.db
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# Visual Studio Code related
+.vscode/
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+libretrodart/
+
+# Android related
+android/.gradle/
+android/local.properties
+android/gen/
+android/bin/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/app/build/
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+android/app/src/main/kotlin/io/flutter/plugins/GeneratedPluginRegistrant.kt
+**/build/
+*.jks
+*.keystore
+*.apk
+*.aab
+
+# iOS related
+ios/**/config.env
+ios/**/Pods/
+ios/.generated/
+ios/Flutter/.last_build_id
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.[h|m]
+
+# Windows related
+windows/flutter/ephemeral/
+windows/flutter/generated_config.cmake
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugin_registrant.h
+windows/flutter/generated_plugins.cmake
+windows/runner/GeneratedPluginRegistrant.h
+windows/runner/GeneratedPluginRegistrant.cc
+windows/runner/*.user
+windows/runner/*.suo
+windows/runner/*.userosscache
+windows/runner/*.sln.docstates
+windows/x64/
+windows/x86/
+*.[Cc]ache
+!*.[Cc]ache/
+
+# Linux related
+linux/flutter/ephemeral/
+linux/flutter/generated_config.cmake
+linux/flutter/generated_plugins.cmake
+
+# macOS related
+macos/Flutter/ephemeral/
+macos/Flutter/GeneratedPluginRegistrant.swift
+macos/Flutter/GeneratedPluginRegistrant.h
+macos/Flutter/GeneratedPluginRegistrant.m
+macos/Flutter/generated_config.cmake
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json

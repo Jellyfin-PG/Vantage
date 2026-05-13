@@ -1,0 +1,52 @@
+<svg
+    viewBox="0 0 256 256"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
+>
+    <defs>
+        <linearGradient id="fadeLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ff3e00" stop-opacity="0" />
+            <stop offset="25%" stop-color="#ff3e00" stop-opacity="1" />
+            <stop offset="75%" stop-color="#ff3e00" stop-opacity="1" />
+            <stop offset="100%" stop-color="#ff3e00" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+
+    <!-- Centered group -->
+    <g transform="translate(8 58)">
+        <g fill="none">
+            <path
+                d="M50 30 L120 110 L190 30"
+                stroke="#ffffff08"
+                stroke-width="32"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+
+            <path
+                d="M50 30 L120 110 L190 30"
+                stroke="#fdfcfa"
+                stroke-width="22"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+
+            <path
+                d="M50 30 L120 110 L190 30"
+                stroke="url(#fadeLineGrad)"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-dasharray="12 6"
+            />
+        </g>
+
+        <circle cx="50" cy="30" r="14" fill="#0c0d0e" stroke="#fdfcfa" stroke-width="2" />
+        <circle cx="50" cy="30" r="5" fill="#ff3e00" />
+
+        <circle cx="190" cy="30" r="14" fill="#0c0d0e" stroke="#fdfcfa" stroke-width="2" />
+        <circle cx="190" cy="30" r="5" fill="#ff3e00" />
+
+        <circle cx="120" cy="110" r="4" fill="#ff3e00" />
+    </g>
+</svg>
