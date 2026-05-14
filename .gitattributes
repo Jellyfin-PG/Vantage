@@ -1,0 +1,5 @@
+# Ensure gradlew always uses LF line endings
+android/gradlew text eol=lf
+# Ensure Windows batch files always use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf

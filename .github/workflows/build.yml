@@ -32,6 +32,9 @@ jobs:
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew
+
       - name: Build APKs
         run: flutter build apk --debug --split-per-abi
 
