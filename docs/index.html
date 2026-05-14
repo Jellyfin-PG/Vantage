@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vantage | JellyEmu Client</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#8fa8ff',
+                            DEFAULT: '#4f46e5',
+                            dark: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #030508;
+            color: white;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .porthole-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95vmin;
+            height: 95vmin;
+            border-radius: 50%;
+            box-shadow: 
+                0 0 0 100vmax #0c0d12, 
+                inset 0 0 60px rgba(0,0,0,0.9), 
+                inset 0 0 0 8px #2a2d3e, 
+                inset 0 0 0 14px #12131c,
+                inset 0 0 20px 14px rgba(0,0,0,0.8);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .rivet {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            left: 50%;
+            top: 50%;
+            margin-left: -6px;
+            margin-top: -6px;
+            background: #1f2230;
+            border-radius: 50%;
+            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.1), inset -2px -2px 4px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        #ui-layer::-webkit-scrollbar {
+            display: none;
+        }
+
+        .glass-panel {
+            background: rgba(12, 13, 18, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .hologram-text {
+            text-shadow: 0 0 20px rgba(143, 168, 255, 0.5);
+        }
+        
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(74, 222, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand selection:text-white">
+
+    <div id="canvas-container"></div>
+
+    <div class="porthole-container" id="porthole"></div>
+
+    <div id="ui-layer" class="flex flex-col items-center justify-center min-h-screen p-6 sm:p-12">
+        
+        <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 gap-8 items-center mt-12 mb-24 md:my-auto pointer-events-none">
+            
+            <div class="md:col-span-7 space-y-6 pointer-events-auto">
+                <div class="inline-flex items-center space-x-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 text-sm font-medium text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                    <span>Currently in Active Development</span>
+                </div>
+
+                <h1 class="text-6xl sm:text-7xl md:text-8xl font-display font-bold tracking-tighter hologram-text text-white">
+                    VANTAGE
+                </h1>
+                
+                <h2 class="text-xl sm:text-2xl text-brand-light font-light max-w-lg leading-relaxed">
+                    The ambitious JellyEmu client bringing emulation gaming to the Jellyfin ecosystem.
+                </h2>
+                
+                <p class="text-gray-300 text-base sm:text-lg max-w-lg">
+                    Look out the window. Your entire emulation library is out there, waiting to be explored. Streamlined, beautifully presented, and integrated directly with your media server.
+                </p>
+
+                <div class="pt-4 flex flex-wrap gap-4">
+                    <a href="https://github.com/Jellyfin-PG/Vantage" class="group relative px-6 py-3 font-semibold text-white bg-brand rounded-lg overflow-hidden transition-all hover:bg-brand-light hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]">
+                        <span class="relative z-10 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+                            View Source on GitHub
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="md:col-span-5 space-y-6 pointer-events-auto mt-8 md:mt-0">
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 transform transition-transform hover:-translate-y-1">
+                    <h3 class="font-display text-xl font-semibold mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-brand-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        Multi-Platform Engine
+                    </h3>
+                    <p class="text-gray-400 text-sm mb-6">Built to connect seamlessly to multiple emulation platforms natively on your favorite devices.</p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/5">
+                            <div class="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Windows</h4>
+                                <p class="text-xs text-gray-400">Native desktop experience</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/5">
+                            <div class="p-2 bg-green-500/20 rounded-lg text-green-400">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0004.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.244 13.8533 7.8512 12 7.8512s-3.5902.3928-5.1367 1.0988l-2.0223-3.503a.416.416 0 00-.5676-.1521.416.416 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3432-4.1021-2.6889-7.5743-6.1185-9.4402"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Android</h4>
+                                <p class="text-xs text-gray-400">Mobile & Handhelds</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 bg-white/5 rounded-xl p-3 border border-white/5">
+                            <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">Android TV</h4>
+                                <p class="text-xs text-gray-400">Living room ready</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="absolute bottom-6 w-full text-center text-gray-500 text-sm font-light pointer-events-none">
+            Powered by Jellyfin • For Gaming Enthusiasts
+        </div>
+    </div>
+
+    <script>
+        const porthole = document.getElementById('porthole');
+        const numRivets = 16;
+        
+        for(let i = 0; i < numRivets; i++) {
+            const angle = i * (360 / numRivets);
+            const rivet = document.createElement('div');
+            rivet.className = 'rivet';
+            
+            rivet.style.transform = `rotate(${angle}deg) translateY(calc(-47.5vmin - 16px))`;
+            
+            porthole.appendChild(rivet);
+        }
+        
+        window.onload = function () {
+            initThreeJS();
+        }
+
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+          
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020306);
+            
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 15;
+            camera.position.x = 2;
+
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            sunLight.position.set(-10, 5, 5);
+            scene.add(sunLight);
+
+            function generateEarthTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1024;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+
+                const gradient = ctx.createLinearGradient(0, 0, 0, 512);
+                gradient.addColorStop(0, '#041029');
+                gradient.addColorStop(0.5, '#0a2e63');
+                gradient.addColorStop(1, '#041029');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 1024, 512);
+
+                function drawBlobs(count, sizeBase, color, alpha) {
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = alpha;
+                    for (let i = 0; i < count; i++) {
+                        const cx = Math.random() * 1024;
+                        const cy = Math.random() * 512;
+                        
+                        if (cy < 50 || cy > 462) continue;
+
+                        const r = Math.random() * sizeBase + 10;
+                        
+                        const clusters = [];
+                        for(let j=0; j<5; j++) {
+                            clusters.push({
+                                dx: (Math.random()-0.5)*r*2,
+                                dy: (Math.random()-0.5)*r*2,
+                                cr: r*0.7
+                            });
+                        }
+
+                        function drawContinent(baseX) {
+                            ctx.beginPath();
+                            ctx.arc(baseX, cy, r, 0, Math.PI * 2);
+                            ctx.fill();
+                            
+                            for(let j=0; j<5; j++) {
+                                ctx.beginPath();
+                                ctx.arc(baseX + clusters[j].dx, cy + clusters[j].dy, clusters[j].cr, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
+                        }
+
+                        drawContinent(cx);
+                        
+                        if (cx < 100) drawContinent(cx + 1024);
+                        if (cx > 924) drawContinent(cx - 1024);
+                    }
+                }
+
+                drawBlobs(40, 30, '#103822', 0.8);
+                drawBlobs(30, 20, '#1c5c37', 0.9);
+                drawBlobs(15, 15, '#7a6738', 0.7);
+                
+                ctx.globalAlpha = 1.0;
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            function generateCloudTexture() {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1024;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.fillStyle = 'rgba(255,255,255,0)';
+                ctx.fillRect(0, 0, 1024, 512);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.globalAlpha = 0.3;
+
+                for (let i = 0; i < 200; i++) {
+                    const cx = Math.random() * 1024;
+                    const cy = Math.random() * 512;
+                    const width = Math.random() * 60 + 20;
+                    const height = Math.random() * 15 + 5;
+                    const rotation = (cy > 256 ? 1 : -1) * (Math.random() * 0.2);
+
+                    function drawCloud(x) {
+                        ctx.save();
+                        ctx.translate(x, cy);
+                        ctx.rotate(rotation);
+                        
+                        ctx.beginPath();
+                        ctx.ellipse(0, 0, width, height, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    drawCloud(cx);
+
+                    if (cx - width < 0) {
+                        drawCloud(cx + 1024);
+                    } else if (cx + width > 1024) {
+                        drawCloud(cx - 1024);
+                    }
+                }
+                return new THREE.CanvasTexture(canvas);
+            }
+
+            const earthGeometry = new THREE.SphereGeometry(4, 64, 64);
+            const earthMaterial = new THREE.MeshStandardMaterial({
+                map: generateEarthTexture(),
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            scene.add(earth);
+
+            const cloudGeometry = new THREE.SphereGeometry(4.05, 64, 64);
+            const cloudMaterial = new THREE.MeshStandardMaterial({
+                map: generateCloudTexture(),
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.NormalBlending,
+                depthWrite: false
+            });
+            const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+            earth.add(clouds);
+
+            const atmosphereGeometry = new THREE.SphereGeometry(4.2, 64, 64);
+            const atmosphereMaterial = new THREE.MeshBasicMaterial({
+                color: 0x4f46e5,
+                transparent: true,
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending,
+                side: THREE.BackSide
+            });
+            const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+            earth.add(atmosphere);
+
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 2000;
+            const posArray = new Float32Array(starsCount * 3);
+            const colorsArray = new Float32Array(starsCount * 3);
+
+            for(let i = 0; i < starsCount * 3; i+=3) {
+                const radius = 20 + Math.random() * 50;
+                const theta = 2 * Math.PI * Math.random();
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                posArray[i] = radius * Math.sin(phi) * Math.cos(theta);
+                posArray[i+1] = radius * Math.sin(phi) * Math.sin(theta);
+                posArray[i+2] = radius * Math.cos(phi);
+
+                const starType = Math.random();
+                if(starType > 0.9) {
+                    colorsArray[i] = 0.5; colorsArray[i+1] = 0.7; colorsArray[i+2] = 1.0;
+                } else if (starType < 0.1) {
+                    colorsArray[i] = 1.0; colorsArray[i+1] = 0.8; colorsArray[i+2] = 0.5;
+                } else {
+                    colorsArray[i] = 1.0; colorsArray[i+1] = 1.0; colorsArray[i+2] = 1.0;
+                }
+            }
+
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
+
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const starMesh = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starMesh);
+
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+            
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+          
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                const delta = clock.getDelta();
+
+                earth.rotation.y += 0.05 * delta;
+                clouds.rotation.y += 0.07 * delta;
+                starMesh.rotation.y += 0.005 * delta;
+
+                targetX = mouseX * 0.002;
+                targetY = mouseY * 0.002;
+                
+                camera.position.x += (2 + targetX - camera.position.x) * 0.02;
+                camera.position.y += (-targetY - camera.position.y) * 0.02;
+                
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
