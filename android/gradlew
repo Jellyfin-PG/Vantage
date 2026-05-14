@@ -1,18 +1,9 @@
 #!/usr/bin/env bash
 
-
-
-
-
-
-
-
-
 DEFAULT_JVM_OPTS=""
 
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
-
 
 MAX_FD="maximum"
 
@@ -26,7 +17,6 @@ die ( ) {
     echo
     exit 1
 }
-
 
 cygwin=false
 msys=false
@@ -42,8 +32,6 @@ case "`uname`" in
     msys=true
     ;;
 esac
-
-
 
 PRG="$0"
 
@@ -63,10 +51,8 @@ cd "$SAVED" >/dev/null
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
-
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-        
         JAVACMD="$JAVA_HOME/jre/sh/java"
     else
         JAVACMD="$JAVA_HOME/bin/java"
@@ -85,7 +71,6 @@ Please set the JAVA_HOME variable in your environment to match the
 location of your Java installation."
 fi
 
-
 if [ "$cygwin" = "false" -a "$darwin" = "false" ] ; then
     MAX_FD_LIMIT=`ulimit -H -n`
     if [ $? -eq 0 ] ; then
@@ -101,18 +86,15 @@ if [ "$cygwin" = "false" -a "$darwin" = "false" ] ; then
     fi
 fi
 
-
 if $darwin; then
     GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
 fi
-
 
 if $cygwin ; then
     APP_HOME=`cygpath --path --mixed "$APP_HOME"`
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
-    
     ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
     SEP=""
     for dir in $ROOTDIRSRAW ; do
@@ -120,17 +102,15 @@ if $cygwin ; then
         SEP="|"
     done
     OURCYGPATTERN="(^($ROOTDIRS))"
-    
     if [ "$GRADLE_CYGPATTERN" != "" ] ; then
         OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
     fi
-    
     i=0
     for arg in "$@" ; do
         CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
-        CHECK2=`echo "$arg"|egrep -c "^-"`                                 
+        CHECK2=`echo "$arg"|egrep -c "^-"`
 
-        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then
             eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
         else
             eval `echo args$i`="\"$arg\""
@@ -151,12 +131,10 @@ if $cygwin ; then
     esac
 fi
 
-
 function splitJvmOpts() {
     JVM_OPTS=("$@")
 }
 eval splitJvmOpts $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS
-JVM_OPTS[${
+JVM_OPTS[${#JVM_OPTS[*]}]="-Dorg.gradle.appname=$APP_BASE_NAME"
 
 exec "$JAVACMD" "${JVM_OPTS[@]}" -classpath "$CLASSPATH" org.gradle.wrapper.GradleWrapperMain "$@"
-
